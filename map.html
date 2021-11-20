@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width,shrink-to-fit=no" />
+   	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Covid-19 Updates</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin-bottom: 0.5rem;">
+            <a class="navbar-brand" href="#">Covid-19 Updates</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Map</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        <div class="row" style="margin-top: 0.5rem;">
+            <div class="col-md-12 col-sm-12">
+                <div id="googleMap" style="width:100%;height:400px;">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="offset-md-1">
+                <img class="img-fluid social-icon" src="img/marker.jpg">
+            </div>
+            <div class="col" id="top">
+                <div class="row">
+                    <div class="container" style="padding-top: 18px; font-size: medium;">
+                        <p>These markers indicate the parishes with confirmed cases. *<em>The markers represent the parish and not a particular 
+                            community in the parish.
+                        </em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="container">
+                    <div class="alert alert-warning" role="alert">
+                        <h5 class="card-title" style="text-align: center;">Coronavirus Cases by Country</h5>
+                      </div>
+                    <table class="table table-hover table-bordered" id="detailsTable">
+                        <thead>
+                          <tr>
+                            <th scope="col" id="country" style="font-size:small">Country</th>
+                            <th scope="col" id="totCases" style="font-size:small">Total Cases</th>
+                            <th scope="col" id="totDeath" style="font-size:small">Total Deaths</th>
+                            <th scope="col" id="totRec" style="font-size:small">Total Recovered</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbod">
+                        </tbody>
+                      </table>
+                      
+                      <div style="margin-bottom:0.5em; text-align: center;"> 
+                        <a href="https://www.worldometers.info/coronavirus/" target="_blank" class="btn btn-info">Click here to see more information related to the table above.</a>
+                      </div>
+                      
+              </div>
+           </div>
+          </div>
+          <div>
+            <a href="#top">Top</a>
+          </div>
+        <script>
+            
+            function myMap() {
+                var locations = [
+                ['Kingston', 18.0179,-76.8099,11],
+                ['Westmoreland',18.2944378,-78.1564432,4],
+                ['Clarendon', 17.9597177,-77.2405153,9],
+                ['St James', 18.3923,-77.8596],
+                ['St. Andrew', 18.0391, -76.7567],
+                ['St Mary', 18.3093, -76.9643],
+                ['Portland', 18.0844, -76.4100],
+                ['Trelawny', 18.3526, -77.6078],
+                ['Manchester', 18.0670, -77.5161],
+                ['St. Catherine', 18.0364, -77.0564],
+                ['St. Thomas', 17.9700, -76.4332],
+                ['St. Ann', 18.3281, -77.2405],
+                ['St. Elizabeth', 18.0788, -77.6994]
+            
+            ];
+            var myCenter = new google.maps.LatLng(18.0178862,-76.9403995,11);
+            var mapCanvas = document.getElementById("googleMap");
+            var mapOptions = {center: myCenter, zoom: 8};
+            var map = new google.maps.Map(mapCanvas, mapOptions);
+          
+            var infowindow = new google.maps.InfoWindow();
+         
+         var marker, i;
+     
+         for (i = 0; i < locations.length; i++) {  
+           marker = new google.maps.Marker({
+             position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+             map: map
+           });
+     
+           google.maps.event.addListener(marker, 'click', (function(marker, i) {
+             return function() {
+               //map.setZoom(10);
+               map.setCenter(marker.getPosition());
+               infowindow.setContent(locations[i][0]);
+               infowindow.open(map, marker);
+             }
+           })(marker, i));
+         }
+         
+        }
+            
+    </script> 
+    
+    <script>
+      'use strict';
+     var url = "https://corona.lmao.ninja/v2/Countries";
+     let request = new XMLHttpRequest();
+     request.open('GET', url, true);
+    
+      request.onreadystatechange = function()
+      {
+        if (request.readyState == 4)
+        {
+          if(request.status == 200)
+          {
+            var response = JSON.parse(request.responseText);
+            var table =  document.getElementById("tbod");
+            response.forEach(element => {
+              var row = table.insertRow();
+              var countryCell = row.insertCell().innerHTML = element.country;
+              var totCasesCell = row.insertCell().innerHTML =  element.cases;
+              var totDeathCell = row.insertCell().innerHTML = element.deaths;
+              var totRecCell = row.insertCell().innerHTML = element.recovered;
+              var x = row.cells;
+              x[0].style.fontWeight = "600";
+
+            });
+            
+          }
+
+          if(request.status == 404)
+          {
+            console.log("Resource not found");
+          }
+        }
+      }
+      request.send();  
+    
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> 
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script>    
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZhgPK1-KFL58xd2kU1qfowDeM8s1nNmc&callback=myMap"></script>
+    </body>
+    <footer class="navbar navbar-primary bg-primary">
+      <div class="col-md-4">
+        <a class="nav-link" style="color: white;" href="https://www.moh.gov.jm/edu-resources/learn-about-the-coronaviruses/" target="_blank">Learn more about COVID-19</a>
+      </div>
+      <div class="col-md-4">
+        <ul style="list-style: none">
+          <li>Contact</li>
+          <li>876-542-5998</li>
+          <li>876-542-6007</li>
+          <li>876-542-6008</li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul style="list-style: none">
+          <li>Site Map</li>
+          <li><a class="nav-link" style="color: white;" href="index.html">Home</a></li>
+          <li><a class="nav-link" style="color: white;" href="#">Map <span class="sr-only">(current)</span></a></li>
+        </ul>
+      </div>
+    </footer>
+</html>
+
+
